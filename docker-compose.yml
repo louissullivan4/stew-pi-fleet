@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  pi-fleet:
+    build: .
+    image: pi-fleet:latest
+    container_name: pi-fleet
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+
+    # Persistent volumes
+    volumes:
+      - ./config:/data/config:ro          # Pi configuration (read-only in container)
+      - ./data/db:/data/db                 # SQLite database
+      - ./data/ssh:/data/ssh:ro            # SSH keys (read-only in container)
+
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+
+      # --- Required: change these ---
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      DASHBOARD_USERNAME: ${DASHBOARD_USERNAME:-admin}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:?Set DASHBOARD_PASSWORD in .env}
+
+      # --- Paths inside container ---
+      CONFIG_PATH: /data/config/pis.yaml
+      DB_PATH: /data/db/fleet.db
+      SSH_KEY_PATH: /data/ssh/pi_fleet_rsa
+
+      # --- Optional notifications ---
+      WEBHOOK_URL:    ${WEBHOOK_URL:-}
+      SMTP_HOST:      ${SMTP_HOST:-}
+      SMTP_PORT:      ${SMTP_PORT:-587}
+      SMTP_USER:      ${SMTP_USER:-}
+      SMTP_PASS:      ${SMTP_PASS:-}
+      ALERT_EMAIL_FROM: ${ALERT_EMAIL_FROM:-}
+      ALERT_EMAIL_TO:   ${ALERT_EMAIL_TO:-}
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/auth/verify', r => process.exit(r.statusCode === 401 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

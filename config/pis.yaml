@@ -1,0 +1,67 @@
+# Pi Fleet — managed host configuration
+# Each Pi needs SSH key-based access; run `npm run setup` to generate keys.
+
+pis:
+  - id: stew-network
+    name: "Network Pi"
+    ip: "192.168.1.32"
+    ssh_user: stew-network
+    # ssh_port: 22        # optional, defaults to 22
+    # ssh_key_path: ~     # optional, defaults to SSH_KEY_PATH env var
+    role: network
+    services:
+      - pihole
+      - unbound
+      - nginx
+    reboot_schedule: "0 4 * * 0"   # Sundays at 04:00
+    health_check_interval: 5        # minutes
+
+  - id: stew-home
+    name: "Home Automation"
+    ip: "192.168.1.11"
+    ssh_user: pi
+    role: home-automation
+    services:
+      - home-assistant
+      - mosquitto
+      - zigbee2mqtt
+    health_check_interval: 5
+
+  - id: pi-media
+    name: "Media Server"
+    ip: "192.168.1.12"
+    ssh_user: pi
+    role: media
+    services:
+      - jellyfin
+      - transmission
+      - sonarr
+      - radarr
+    health_check_interval: 10
+
+  - id: pi-storage
+    name: "Storage Pi"
+    ip: "192.168.1.13"
+    ssh_user: pi
+    role: storage
+    services:
+      - smbd
+      - syncthing
+    health_check_interval: 10
+
+  - id: pi-ai
+    name: "AI Brain"
+    ip: "192.168.1.14"
+    ssh_user: pi
+    role: ai-brain
+    services:
+      - ollama
+      - open-webui
+    health_check_interval: 15
+
+settings:
+  metrics_retention_days: 30
+  metrics_collection_interval: 5   # minutes — default if not set per-Pi
+  alert_cooldown_minutes: 30        # minimum time between repeat alerts
+  disk_alert_threshold: 90          # percent
+  temperature_alert_threshold: 80   # °C

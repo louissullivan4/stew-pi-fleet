@@ -1,0 +1,12 @@
+node_modules/
+src/client/node_modules/
+src/client/dist/
+
+data/db/
+data/ssh/
+
+.env
+*.env.local
+
+*.log
+npm-debug.log*
