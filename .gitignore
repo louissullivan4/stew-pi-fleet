@@ -5,6 +5,7 @@ src/client/dist/
 data/db/
 data/ssh/
 data/homeassistant/
+data/eufy-security/
 
 .env
 *.env.local

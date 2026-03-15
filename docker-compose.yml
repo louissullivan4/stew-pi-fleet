@@ -56,3 +56,17 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  eufy-security-ws:
+    container_name: eufy-security-ws
+    image: bropat/eufy-security-ws:latest
+    ports:
+      - "3005:3000"
+    volumes:
+      - ./data/eufy-security:/data
+    environment:
+      - USERNAME=${EUFY_USERNAME:-}
+      - PASSWORD=${EUFY_PASSWORD:-}
+      - COUNTRY=IE
+      - TRUSTED_DEVICE_NAME=stew-home
+    restart: unless-stopped
