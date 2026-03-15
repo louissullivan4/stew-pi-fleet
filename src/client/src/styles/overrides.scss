@@ -161,7 +161,7 @@ body,
 
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1px;
   background: #393939;
   border: 1px solid #393939;
@@ -195,13 +195,27 @@ body,
   margin-left: 0.25rem;
 }
 
+.stat-tile__value--sm {
+  font-size: 1.1rem;
+}
+
 // ─── Charts ──────────────────────────────────────────────────────────────────
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
 
 .chart-panel {
   background: #262626;
   border: 1px solid #393939;
   padding: 1rem 1rem 0.5rem;
-  margin-bottom: 1rem;
 }
 
 .chart-panel__title {
@@ -233,6 +247,24 @@ body,
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
+
+// Fix PasswordInput reveal button vertical alignment
+.cds--password-input-wrapper .cds--text-input__field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cds--text-input--password__visibility__toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .login-page {
   min-height: 100vh;
@@ -396,5 +428,9 @@ body,
 
   .stat-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
   }
 }

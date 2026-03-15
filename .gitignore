@@ -11,3 +11,5 @@ data/homeassistant/
 
 *.log
 npm-debug.log*
+
+.claude/

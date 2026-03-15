@@ -9,7 +9,14 @@ import {
   Network_1, Home, VideoPlayer, DataVolume, MachineLearning,
 } from '@carbon/icons-react';
 import { pis as pisApi } from '../../api';
-import { CpuMemChart, DiskTempChart } from './MetricsChart';
+import { CpuChart, MemChart, DiskChart, TempChart } from './MetricsChart';
+
+const TIME_RANGES = [
+  { label: '1H',  hours: 1 },
+  { label: '24H', hours: 24 },
+  { label: '7D',  hours: 168 },
+  { label: '30D', hours: 720 },
+];
 import ServiceList from './ServiceList';
 import SchedulePanel from './SchedulePanel';
 import Terminal from '../Terminal/Terminal';
@@ -39,11 +46,11 @@ function formatUptime(seconds) {
   return parts.join(' ');
 }
 
-function StatTile({ label, value, unit }) {
+function StatTile({ label, value, unit, small }) {
   return (
     <div className="stat-tile">
       <p className="stat-tile__label">{label}</p>
-      <p className="stat-tile__value" style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
+      <p className={`stat-tile__value${small ? ' stat-tile__value--sm' : ''}`} style={{ display: 'flex', alignItems: 'baseline', gap: '0.25rem' }}>
         {value}
         {unit && <span className="stat-tile__unit">{unit}</span>}
       </p>
@@ -61,6 +68,7 @@ export default function PiDetail() {
   const [refreshing, setRefreshing] = useState(false);
   const [rebootModal, setRebootModal] = useState(false);
   const [rebooting, setRebooting] = useState(false);
+  const [timeRange, setTimeRange] = useState(1);
 
   const load = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
@@ -69,7 +77,7 @@ export default function PiDetail() {
     try {
       const [detail, hist] = await Promise.all([
         pisApi.get(id),
-        pisApi.getMetrics(id, 24),
+        pisApi.getMetrics(id, timeRange),
       ]);
       setPi(detail);
       setHistory(hist);
@@ -79,7 +87,7 @@ export default function PiDetail() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [id]);
+  }, [id, timeRange]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -179,6 +187,7 @@ export default function PiDetail() {
           <StatTile
             label="Memory"
             value={`${formatBytes(metrics.mem_used_mb)} / ${formatBytes(metrics.mem_total_mb)}`}
+            small
           />
           <StatTile label="Disk" value={metrics.disk_used_pct?.toFixed(0)} unit="%" />
           {metrics.temperature_c > 0 && (
@@ -201,11 +210,25 @@ export default function PiDetail() {
         <TabPanels>
           {/* Metrics */}
           <TabPanel style={{ padding: '1rem 0' }}>
+            <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1rem' }}>
+              {TIME_RANGES.map(r => (
+                <Button
+                  key={r.hours}
+                  kind={timeRange === r.hours ? 'primary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setTimeRange(r.hours)}
+                >
+                  {r.label}
+                </Button>
+              ))}
+            </div>
             {history.length > 0 ? (
-              <>
-                <CpuMemChart  data={history} />
-                <DiskTempChart data={history} />
-              </>
+              <div className="chart-grid">
+                <CpuChart  data={history} hours={timeRange} />
+                <MemChart  data={history} hours={timeRange} />
+                <DiskChart data={history} hours={timeRange} />
+                <TempChart data={history} hours={timeRange} />
+              </div>
             ) : (
               <p style={{ color: '#8d8d8d', fontSize: '0.875rem' }}>
                 No historical data yet. Metrics are collected on each health-check interval.

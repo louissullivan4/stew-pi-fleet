@@ -100,7 +100,7 @@ export default function SchedulePanel({ pi }) {
   }
 
   return (
-    <div>
+    <div style={{ paddingBottom: '1rem' }}>
       {error && (
         <InlineNotification
           kind="error"
