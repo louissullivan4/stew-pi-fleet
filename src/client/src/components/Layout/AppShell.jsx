@@ -21,9 +21,9 @@ import {
   Chip,
   Network_1,
   Home,
-  MediaPlayer,
-  DataStorage,
-  Cpu,
+  VideoPlayer,
+  DataVolume,
+  MachineLearning,
   Terminal,
 } from '@carbon/icons-react';
 import { useAuth, useNotif } from '../../App';
@@ -31,9 +31,9 @@ import { useAuth, useNotif } from '../../App';
 const ROLE_ICONS = {
   network:        Network_1,
   'home-automation': Home,
-  media:          MediaPlayer,
-  storage:        DataStorage,
-  'ai-brain':     Cpu,
+  media:          VideoPlayer,
+  storage:        DataVolume,
+  'ai-brain':     MachineLearning,
 };
 
 export default function AppShell({ children }) {

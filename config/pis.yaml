@@ -1,67 +1,63 @@
 # Pi Fleet — managed host configuration
 # Each Pi needs SSH key-based access; run `npm run setup` to generate keys.
-
 pis:
   - id: stew-network
     name: "Network Pi"
     ip: "192.168.1.32"
     ssh_user: stew-network
-    # ssh_port: 22        # optional, defaults to 22
-    # ssh_key_path: ~     # optional, defaults to SSH_KEY_PATH env var
     role: network
     services:
       - pihole
       - unbound
-      - nginx
-    reboot_schedule: "0 4 * * 0"   # Sundays at 04:00
-    health_check_interval: 5        # minutes
+      - wireguard
+      - fail2ban
+    reboot_schedule: "0 4 * * 0"
+    health_check_interval: 5
+
 
   - id: stew-home
     name: "Home Automation"
-    ip: "192.168.1.11"
-    ssh_user: pi
+    ip: "192.168.1.34"
+    ssh_user: stew
     role: home-automation
     services:
       - home-assistant
-      - mosquitto
-      - zigbee2mqtt
+      - stew-pi-fleet
+    reboot_schedule: "15 4 * * 0"
     health_check_interval: 5
 
-  - id: pi-media
+
+  - id: stew-media
     name: "Media Server"
-    ip: "192.168.1.12"
-    ssh_user: pi
+    ip: "192.168.1.36"
+    ssh_user: stew
     role: media
     services:
       - jellyfin
-      - transmission
-      - sonarr
-      - radarr
-    health_check_interval: 10
+    reboot_schedule: "20 4 * * 0"
+    health_check_interval: 5
 
-  - id: pi-storage
-    name: "Storage Pi"
-    ip: "192.168.1.13"
-    ssh_user: pi
+
+  - id: stew-storage
+    name: "Storage / NAS"
+    ip: "192.168.1.38"
+    ssh_user: stew
     role: storage
     services:
-      - smbd
-      - syncthing
-    health_check_interval: 10
+      - nextcloud
+      - immich
+      - samba
+    reboot_schedule: "25 4 * * 0"
+    health_check_interval: 5
 
-  - id: pi-ai
+
+  - id: stew-brain
     name: "AI Brain"
-    ip: "192.168.1.14"
-    ssh_user: pi
-    role: ai-brain
+    ip: "192.168.1.40"
+    ssh_user: stew
+    role: ai
     services:
       - ollama
       - open-webui
-    health_check_interval: 15
-
-settings:
-  metrics_retention_days: 30
-  metrics_collection_interval: 5   # minutes — default if not set per-Pi
-  alert_cooldown_minutes: 30        # minimum time between repeat alerts
-  disk_alert_threshold: 90          # percent
-  temperature_alert_threshold: 80   # °C
+    reboot_schedule: "30 4 * * 0"
+    health_check_interval: 5

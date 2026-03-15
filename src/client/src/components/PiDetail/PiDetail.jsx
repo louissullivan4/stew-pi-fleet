@@ -6,7 +6,7 @@ import {
 } from '@carbon/react';
 import {
   ArrowLeft, Renew, Power, ChartArea, List, Terminal as TerminalIcon, Time,
-  Network_1, Home, MediaPlayer, DataStorage, Cpu,
+  Network_1, Home, VideoPlayer, DataVolume, MachineLearning,
 } from '@carbon/icons-react';
 import { pis as pisApi } from '../../api';
 import { CpuMemChart, DiskTempChart } from './MetricsChart';
@@ -15,11 +15,11 @@ import SchedulePanel from './SchedulePanel';
 import Terminal from '../Terminal/Terminal';
 
 const ROLE_ICONS = {
-  network:           Network_1,
+  network:        Network_1,
   'home-automation': Home,
-  media:             MediaPlayer,
-  storage:           DataStorage,
-  'ai-brain':        Cpu,
+  media:          VideoPlayer,
+  storage:        DataVolume,
+  'ai-brain':     MachineLearning,
 };
 
 function formatBytes(mb) {
