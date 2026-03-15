@@ -70,7 +70,7 @@ class SSHPool extends EventEmitter {
   async shell(piId, windowOpts = { term: 'xterm-256color', cols: 80, rows: 24 }) {
     const client = await this.connect(piId);
     return new Promise((resolve, reject) => {
-      client.exec('exec zsh || exec bash', { pty: windowOpts }, (err, stream) => {
+      client.exec('exec $(command -v zsh || command -v bash)', { pty: windowOpts }, (err, stream) => {
         if (err) return reject(err);
         resolve(stream);
       });
